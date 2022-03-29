@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+Built using Node v16.13.1, NPM v8.1.2
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
