@@ -2,7 +2,7 @@ import React from 'react';
 
 const NextSongInfo = () => {
     return (
-        <div>NextSongInfo</div>
+        <div className='bg-black p-4 rounded-md'>NextSongInfo</div>
     )
 }
 
