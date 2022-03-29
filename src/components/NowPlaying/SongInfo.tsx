@@ -3,10 +3,10 @@ import ProgressBar from './ProgressBar';
 
 const SongInfo = () => {
     return (
-        <>
+        <div>
         SongInfo
         <ProgressBar/>
-        </>
+        </div>
     )
 }
 

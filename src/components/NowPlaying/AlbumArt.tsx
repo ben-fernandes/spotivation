@@ -2,7 +2,7 @@ import React from 'react';
 
 const AlbumArt = () => {
     return (
-        <>AlbumArt</>
+        <div>AlbumArt</div>
     )
 }
 

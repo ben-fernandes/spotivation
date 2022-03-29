@@ -2,7 +2,7 @@ import React from 'react';
 
 const NextSongInfo = () => {
     return (
-        <>NextSongInfo</>
+        <div>NextSongInfo</div>
     )
 }
 
