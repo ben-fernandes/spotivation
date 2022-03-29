@@ -6,7 +6,7 @@ import Upcoming from './components/Upcoming';
 const App = () => {
   // todo - change the background gradient dependent on the channel
   return (
-    <div className='flex flex-col justify-between p-8 fixed inset-0 bg-gradient-to-b from-red-900 to-blue-600'>
+    <div className='grid grid-rows-3 grid-cols-1 gap-8 p-8 fixed inset-0 bg-gradient-to-b from-red-900 to-black'>
       <Header/>
       <NowPlaying/>
       <Upcoming/>
