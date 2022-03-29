@@ -6,16 +6,16 @@ const ProgressBar = () => {
 
     useEffect(() => {
         setInterval(() => {
-            setProgress((progress) => progress + 1);
+            setProgress((p) => p + 1);
         }, 1000);
     }, []);
 
     const percentageWidth = `${Math.min((progress / max) * 100, 100)}%`;
 
     return (
-        <div className="h-2 w-3/4 bg-white">
+        <div className="h-2 w-3/4 bg-zinc-900/75">
             <div
-                className="h-full bg-red-500 transition-all"
+                className="h-full bg-white transition-all"
                 style={{ width: percentageWidth }}
             ></div>
         </div>
