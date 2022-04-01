@@ -24,7 +24,6 @@ const App = () => {
                     changeChannelColor={changeChannelColor}
                 />
                 <NowPlaying />
-                <Upcoming />
             </div>
         </SpotifyProvider>
     );
