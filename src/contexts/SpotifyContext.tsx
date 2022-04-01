@@ -72,7 +72,7 @@ const SpotifyProvider: React.FC = (props) => {
 
     const signOut = () => {
         window.localStorage.removeItem("token");
-        window.location.href = "http://localhost:3000";
+        window.location.href = window.location.origin;
     };
 
     const getCurrentTrackStatus =
