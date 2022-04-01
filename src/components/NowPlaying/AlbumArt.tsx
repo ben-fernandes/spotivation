@@ -1,11 +1,15 @@
 import React from "react";
 
-const AlbumArt = () => {
+interface IAlbumArt {
+    src: string;
+}
+
+const AlbumArt: React.FC<IAlbumArt> = ({ src }) => {
     return (
         <div className="flex justify-center">
             <img
                 className="h-full aspect-square"
-                src="https://picsum.photos/200"
+                src={src}
                 alt="Album artwork"
             ></img>
         </div>

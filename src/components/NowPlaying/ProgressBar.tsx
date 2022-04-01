@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-const ProgressBar = () => {
-    const [max, setMax] = useState(100);
-    const [progress, setProgress] = useState(0);
+interface IProgressBar {
+    currentPos: number;
+    maxPos: number;
+}
 
-    useEffect(() => {
-        setInterval(() => {
-            setProgress((p) => p + 1);
-        }, 1000);
-    }, []);
-
-    const percentageWidth = `${Math.min((progress / max) * 100, 100)}%`;
+const ProgressBar: React.FC<IProgressBar> = ({ currentPos, maxPos }) => {
+    const percentageWidth = `${Math.min((currentPos / maxPos) * 100, 100)}%`;
 
     return (
         <div className="h-2 w-3/4 bg-zinc-900/75">
