@@ -74,6 +74,15 @@ const SpotifyProvider: React.FC = (props) => {
         window.localStorage.removeItem("token");
         window.location.href = window.location.origin;
     };
+    
+    
+    useEffect(() => {
+        setTimeout(() => {
+        window.localStorage.removeItem("token");
+    
+        signIn();
+    }, 50 * 60 * 1000)
+}, []);
 
     const getCurrentTrackStatus =
         async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import NowPlaying from "./components/NowPlaying";
 import Upcoming from "./components/Upcoming";
@@ -9,8 +9,20 @@ const App = () => {
     const [channelColor, setChannelColor] = useState<ChannelColor>("red");
 
     const changeChannelColor = () => {
-        setChannelColor(getNextColor(channelColor));
+        const nextColor = getNextColor(channelColor);
+        window.localStorage.setItem('color', nextColor)
+        setChannelColor(nextColor);
     };
+
+    useEffect(() => {
+        try {
+            const currentCol = window.localStorage.getItem('color');
+            if (!currentCol) throw new Error();
+            setChannelColor(currentCol as any)
+        } catch {
+            setChannelColor('red');
+        }
+    }, [])
 
     return (
         <SpotifyProvider>
