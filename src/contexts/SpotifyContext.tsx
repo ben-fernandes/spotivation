@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
 
-const CLIENT_ID = "+++++";
+const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin;
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const RESPONSE_TYPE = "token";
@@ -11,24 +11,23 @@ const SpotifyContext = createContext({
     isSignedIn: false,
     signIn: () => {},
     signOut: () => {},
-    getCurrentTrackStatus:
-        async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
-            return {
-                timestamp: 0,
-                device: {
-                    id: null,
-                    is_active: false,
-                    is_restricted: false,
-                    name: "",
-                    type: "",
-                    volume_percent: null,
-                },
-                progress_ms: null,
-                is_playing: false,
-                item: null,
-                context: null,
-            };
-        },
+    getCurrentTrackStatus: async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
+        return {
+            timestamp: 0,
+            device: {
+                id: null,
+                is_active: false,
+                is_restricted: false,
+                name: "",
+                type: "",
+                volume_percent: null,
+            },
+            progress_ms: null,
+            is_playing: false,
+            item: null,
+            context: null,
+        };
+    },
 });
 
 const SpotifyProvider: React.FC = (props) => {
@@ -75,17 +74,13 @@ const SpotifyProvider: React.FC = (props) => {
         window.location.href = window.location.origin;
     };
 
-    const getCurrentTrackStatus =
-        async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
-            const currentPlayingTrack =
-                await spotifyApi.getMyCurrentPlayingTrack();
-            return currentPlayingTrack;
-        };
+    const getCurrentTrackStatus = async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
+        const currentPlayingTrack = await spotifyApi.getMyCurrentPlayingTrack();
+        return currentPlayingTrack;
+    };
 
     return (
-        <SpotifyContext.Provider
-            value={{ isSignedIn, signIn, signOut, getCurrentTrackStatus }}
-        >
+        <SpotifyContext.Provider value={{ isSignedIn, signIn, signOut, getCurrentTrackStatus }}>
             {props.children}
         </SpotifyContext.Provider>
     );
