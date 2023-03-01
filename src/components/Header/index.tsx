@@ -19,12 +19,7 @@ const Header: React.FC<IHeader> = ({ channelColor, changeChannelColor }) => {
                     Softwire Party Silent Disco
                 </h1>
             ) : (
-                <h1 className="text-4xl font-bold text-white">
-                    Softwire Party Silent Disco
-                </h1>
-            )}
-            {spotifyContext.isSignedIn ? null : (
-                <button onClick={spotifyContext.signIn}>Sign in</button>
+                <h1 className="text-4xl font-bold text-white">Softwire Party Silent Disco</h1>
             )}
             <p
                 className={`text-4xl font-bold capitalize cursor-pointer ${getTextColor(
