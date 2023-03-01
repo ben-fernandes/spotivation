@@ -1,16 +1,14 @@
 import { createContext, useEffect, useState } from "react";
-import SpotifyWebApi from "spotify-web-api-js";
-import { Buffer } from "buffer";
 import pkceChallenge from "pkce-challenge";
+import { REDIRECT_URL, SPOTIFY_CLIENT_ID } from "../apis/spotify/constants";
+import { getTokens } from "../apis/spotify/accounts";
+import { getCurrentTrackStatusNew } from "../apis/spotify/api";
 
-const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID || "";
-const SPOTIFY_CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET || "";
 const SPOTIFY_AUTH_STATE_KEY = "spotify_auth_state";
 const SPOTIFY_CODE_VERIFIER_KEY = "spotify_code_verifier";
 const SPOTIFY_ACCESS_TOKEN_KEY = "spotify_access_token";
 const SPOTIFY_REFRESH_TOKEN_KEY = "spotify_refresh_token";
 const SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
-const REDIRECT_URL = new URL("login/callback", window.location.origin).toString();
 
 const generateState = () => {
     let text = "";
@@ -28,7 +26,7 @@ const SpotifyContext = createContext({
     initiateSignIn: async () => {},
     requestTokens: async (code: string, state: string) => {},
     signOut: () => {},
-    getCurrentTrackStatus: async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
+    getCurrentTrackStatus: async (): Promise<any> => {
         return {
             timestamp: 0,
             device: {
@@ -79,7 +77,7 @@ const SpotifyProvider: React.FC = (props) => {
 
     const requestTokens = async (code: string, state: string) => {
         const storedState = window.localStorage.getItem(SPOTIFY_AUTH_STATE_KEY);
-        const storedVerifier = window.localStorage.getItem(SPOTIFY_CODE_VERIFIER_KEY) || "";
+        const storedCodeVerifier = window.localStorage.getItem(SPOTIFY_CODE_VERIFIER_KEY) || "";
 
         if (state !== storedState) {
             // TODO - Do some error handling
@@ -87,34 +85,16 @@ const SpotifyProvider: React.FC = (props) => {
 
         window.localStorage.removeItem(SPOTIFY_AUTH_STATE_KEY);
 
-        const formData = new URLSearchParams({
-            grant_type: "authorization_code",
-            code: code,
-            redirect_uri: REDIRECT_URL,
-            client_id: SPOTIFY_CLIENT_ID,
-            code_verifier: storedVerifier,
-        }).toString();
-
-        const tokenUrl = new URL("api/token", SPOTIFY_AUTH_BASE_URL).toString();
-        const authString = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString(
-            "base64"
-        );
-        const responseRaw = await fetch(tokenUrl, {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${authString}`,
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: formData,
-        });
-
-        window.localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
-        const respJson = await responseRaw.json();
-        const { error, access_token, refresh_token } = respJson;
-        if (error) return;
-        window.localStorage.setItem(SPOTIFY_ACCESS_TOKEN_KEY, access_token);
-        window.localStorage.setItem(SPOTIFY_REFRESH_TOKEN_KEY, refresh_token);
-        setIsSignedIn(true);
+        try {
+            const { access_token, refresh_token } = await getTokens(code, storedCodeVerifier);
+            window.localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
+            window.localStorage.setItem(SPOTIFY_ACCESS_TOKEN_KEY, access_token);
+            window.localStorage.setItem(SPOTIFY_REFRESH_TOKEN_KEY, refresh_token);
+            setIsSignedIn(true);
+        } catch (error) {
+            console.error(error);
+            // setIsSignedIn(false);
+        }
     };
 
     const signOut = () => {
@@ -125,16 +105,14 @@ const SpotifyProvider: React.FC = (props) => {
         setIsSignedIn(false);
     };
 
-    const getCurrentTrackStatus = async (): Promise<SpotifyApi.CurrentlyPlayingResponse> => {
-        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY);
-        const cptRaw = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-            headers: {
-                Authorization: `Bearer ${bearerToken}`,
-                "Content-Type": "application/json",
-            },
-        });
-        const currentPlayingTrack = await cptRaw.json();
-        return currentPlayingTrack;
+    const getCurrentTrackStatus = async (): Promise<any> => {
+        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY) || "";
+
+        try {
+            return await getCurrentTrackStatusNew(bearerToken);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
