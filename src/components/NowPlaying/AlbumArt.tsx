@@ -5,15 +5,7 @@ interface IAlbumArt {
 }
 
 const AlbumArt: React.FC<IAlbumArt> = ({ src }) => {
-    return (
-        <div className="flex justify-center">
-            <img
-                className="h-full aspect-square"
-                src={src}
-                alt="Album artwork"
-            ></img>
-        </div>
-    );
+    return <img className="" src={src} alt="Album artwork"></img>;
 };
 
 export default AlbumArt;

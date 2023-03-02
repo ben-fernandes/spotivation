@@ -24,14 +24,16 @@ const NowPlaying = () => {
     }, [spotifyContext]);
 
     return (
-        <div className="text-white rounded-md grid gap-4 grid-cols-2 grid-rows-1 flex-grow p-8">
-            <AlbumArt src={artworkUrl} />
-            <SongInfo
-                songTitle={songTitle}
-                songArtist={songArtist}
-                progressMs={progressMs}
-                durationMs={durationMs}
-            />
+        <div className="relative flex-grow">
+            <div className="absolute inset-0 m-8 text-white rounded-md grid gap-4 grid-cols-2 grid-rows-1 items-center justify-items-center">
+                <AlbumArt src={artworkUrl} />
+                <SongInfo
+                    songTitle={songTitle}
+                    songArtist={songArtist}
+                    progressMs={progressMs}
+                    durationMs={durationMs}
+                />
+            </div>
         </div>
     );
 };

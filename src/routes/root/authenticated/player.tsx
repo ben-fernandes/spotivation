@@ -12,7 +12,7 @@ const Player = () => {
 
     return (
         <div
-            className={`flex flex-col fixed inset-0 bg-gradient-to-b to-black ${getGradientFromColor(
+            className={`flex flex-col flex-grow bg-gradient-to-b to-black ${getGradientFromColor(
                 channelColor
             )}`}
         >
