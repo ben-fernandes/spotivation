@@ -1,22 +1,18 @@
-import { useState } from "react";
+import { useContext } from "react";
 import Header from "../../../components/Header";
 import NowPlaying from "../../../components/NowPlaying";
-import { ChannelColor, getGradientFromColor, getNextColor } from "../../../utils";
+import { ThemeContext } from "../../../contexts/ThemeContext";
+import { getGradientFromColor } from "../../../utils";
 
 const Player = () => {
-    const [channelColor, setChannelColor] = useState<ChannelColor>("red");
-
-    const changeChannelColor = () => {
-        setChannelColor(getNextColor(channelColor));
-    };
-
+    const themeContext = useContext(ThemeContext)
     return (
         <div
             className={`flex flex-col flex-grow bg-gradient-to-b to-black ${getGradientFromColor(
-                channelColor
+                themeContext.themeColor
             )}`}
         >
-            <Header channelColor={channelColor} changeChannelColor={changeChannelColor} />
+            <Header />
             <NowPlaying />
         </div>
     );

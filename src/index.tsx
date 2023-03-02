@@ -10,6 +10,7 @@ import Authenticated from "./routes/root/authenticated";
 import Unauthenticated from "./routes/root/unauthenticated";
 import Login from "./routes/root/unauthenticated/login";
 import { createRoot } from "react-dom/client";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const router = createBrowserRouter([
     {
@@ -43,9 +44,11 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
     <React.StrictMode>
-        <SpotifyProvider>
-            <RouterProvider router={router} />
-        </SpotifyProvider>
+        <ThemeProvider>
+            <SpotifyProvider>
+                <RouterProvider router={router} />
+            </SpotifyProvider>
+        </ThemeProvider>
     </React.StrictMode>
 );
 

@@ -1,14 +1,12 @@
 import React, { useContext } from "react";
 import { SpotifyContext } from "../../contexts/SpotifyContext";
-import { ChannelColor, getTextColor } from "../../utils";
+import { ThemeContext } from "../../contexts/ThemeContext";
+import { getTextColor } from "../../utils";
 
-interface IHeader {
-    channelColor: ChannelColor;
-    changeChannelColor: () => void;
-}
-
-const Header: React.FC<IHeader> = ({ channelColor, changeChannelColor }) => {
+const Header: React.FC = () => {
     const spotifyContext = useContext(SpotifyContext);
+    const themeContext = useContext(ThemeContext);
+
     return (
         <div className="bg-zinc-900/75 p-8 flex justify-between">
             {spotifyContext.isSignedIn ? (
@@ -23,11 +21,11 @@ const Header: React.FC<IHeader> = ({ channelColor, changeChannelColor }) => {
             )}
             <p
                 className={`text-4xl font-bold capitalize cursor-pointer ${getTextColor(
-                    channelColor
+                    themeContext.themeColor
                 )}`}
-                onClick={changeChannelColor}
+                onClick={themeContext.nextColor}
             >
-                {channelColor} channel
+                {themeContext.themeColor} channel
             </p>
         </div>
     );
