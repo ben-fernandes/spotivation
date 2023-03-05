@@ -5,7 +5,7 @@ interface IAlbumArt {
 }
 
 const AlbumArt: React.FC<IAlbumArt> = ({ src }) => {
-    return <img className="" src={src} alt="Album artwork"></img>;
+    return <img className="w-full h-full object-contain" src={src} alt="Album artwork"></img>;
 };
 
 export default AlbumArt;
