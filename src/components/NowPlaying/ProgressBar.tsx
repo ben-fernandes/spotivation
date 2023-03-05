@@ -11,7 +11,7 @@ const ProgressBar: React.FC<IProgressBar> = ({ currentPos, maxPos }) => {
     return (
         <div className="h-2 w-3/4 bg-zinc-900/75">
             <div
-                className="h-full bg-white transition-all"
+                className="h-full bg-white transition-[width] ease-linear duration-[2000ms]"
                 style={{ width: percentageWidth }}
             ></div>
         </div>
