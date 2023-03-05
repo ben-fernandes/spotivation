@@ -15,7 +15,7 @@ const SongInfo: React.FC<ISongInfo> = ({
     durationMs,
 }) => {
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-center justify-center">
             <p className="text-7xl mb-8 text-center">{songTitle}</p>
             <p className="text-5xl mb-8 text-center">{songArtist}</p>
             <ProgressBar currentPos={progressMs} maxPos={durationMs} />
