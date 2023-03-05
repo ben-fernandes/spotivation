@@ -2,7 +2,12 @@ import { createContext, useEffect, useState } from "react";
 import pkceChallenge from "pkce-challenge";
 import { REDIRECT_URL, SPOTIFY_CLIENT_ID } from "../apis/spotify/constants";
 import { getTokens } from "../apis/spotify/accounts";
-import { getCurrentTrackStatusNew } from "../apis/spotify/api";
+import {
+    CurrentlyPlaying,
+    getCurrentTrackStatusNew,
+    getQueueNew,
+    Queue,
+} from "../apis/spotify/api";
 
 const SPOTIFY_AUTH_STATE_KEY = "spotify_auth_state";
 const SPOTIFY_CODE_VERIFIER_KEY = "spotify_code_verifier";
@@ -21,28 +26,20 @@ const generateState = () => {
     return text;
 };
 
-const SpotifyContext = createContext({
+const SpotifyContext = createContext<{
+    isSignedIn: boolean;
+    initiateSignIn: () => Promise<void>;
+    requestTokens: (code: string, state: string) => Promise<void>;
+    signOut: () => void;
+    getCurrentTrackStatus: () => Promise<CurrentlyPlaying>;
+    getQueue: () => Promise<Queue>;
+}>({
     isSignedIn: false,
     initiateSignIn: async () => {},
-    requestTokens: async (code: string, state: string) => {},
+    requestTokens: async (_code: string, _state: string) => {},
     signOut: () => {},
-    getCurrentTrackStatus: async (): Promise<any> => {
-        return {
-            timestamp: 0,
-            device: {
-                id: null,
-                is_active: false,
-                is_restricted: false,
-                name: "",
-                type: "",
-                volume_percent: null,
-            },
-            progress_ms: null,
-            is_playing: false,
-            item: null,
-            context: null,
-        };
-    },
+    getCurrentTrackStatus: async (): Promise<any> => {},
+    getQueue: async (): Promise<any> => {},
 });
 
 const SpotifyProvider: React.FC = (props) => {
@@ -115,9 +112,26 @@ const SpotifyProvider: React.FC = (props) => {
         }
     };
 
+    const getQueue = async (): Promise<any> => {
+        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY) || "";
+
+        try {
+            return await getQueueNew(bearerToken);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <SpotifyContext.Provider
-            value={{ isSignedIn, initiateSignIn, requestTokens, signOut, getCurrentTrackStatus }}
+            value={{
+                isSignedIn,
+                initiateSignIn,
+                requestTokens,
+                signOut,
+                getCurrentTrackStatus,
+                getQueue,
+            }}
         >
             {props.children}
         </SpotifyContext.Provider>

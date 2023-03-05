@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { SpotifyContext } from "../../contexts/SpotifyContext";
 import AlbumArt from "./AlbumArt";
 import SongInfo from "./SongInfo";
@@ -11,17 +11,19 @@ const NowPlaying = () => {
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
 
-    useEffect(() => {
-        setInterval(() => {
-            spotifyContext.getCurrentTrackStatus().then((data) => {
-                data.item && setArtworkUrl(data.item.album.images[0].url);
-                data.item && setSongTitle(data.item.name);
-                data.item && setSongArtist(data.item.artists[0].name);
-                data.progress_ms && setProgressMs(data.progress_ms);
-                data.item && setDurationMs(data.item.duration_ms);
-            });
-        }, 2000);
+    const loadTrackStatusData = useCallback(async () => {
+        const result = await spotifyContext.getCurrentTrackStatus();
+        result.item && setArtworkUrl(result.item.album.images[0].url);
+        result.item && setSongTitle(result.item.name);
+        result.item && setSongArtist(result.item.artists[0].name);
+        result.progress_ms && setProgressMs(result.progress_ms);
+        result.item && setDurationMs(result.item.duration_ms);
     }, [spotifyContext]);
+
+    useEffect(() => {
+        const timerId = setInterval(loadTrackStatusData, 1000 * 2);
+        return () => clearInterval(timerId);
+    }, [loadTrackStatusData]);
 
     return (
         <div className="relative flex-grow">

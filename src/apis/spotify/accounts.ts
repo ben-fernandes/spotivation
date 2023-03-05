@@ -1,6 +1,8 @@
 import { REDIRECT_URL, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from "./constants";
 import { Buffer } from "buffer";
 
+// {status: 401, message: 'The access token expired'}
+
 const SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
 
 export const getTokens = async (code: string, codeVerifier: string) => {

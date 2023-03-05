@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import Header from "../../../components/Header";
 import NowPlaying from "../../../components/NowPlaying";
+import Upcoming from "../../../components/Upcoming";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import { getGradientFromColor } from "../../../utils";
 
@@ -14,6 +15,7 @@ const Player = () => {
         >
             <Header />
             <NowPlaying />
+            <Upcoming/>
         </div>
     );
 };
