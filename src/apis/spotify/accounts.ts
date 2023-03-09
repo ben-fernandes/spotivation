@@ -2,9 +2,11 @@ import { REDIRECT_URL } from "./constants";
 import { Buffer } from "buffer";
 import axios from "axios";
 
+type TokenType = "Bearer";
+
 interface RefreshAccessTokenResponse {
     access_token: string;
-    token_type: string;
+    token_type: TokenType;
     scope: string;
     expires_in: number;
 }
@@ -20,6 +22,7 @@ export const getTokens = async (
     clientSecret: string
 ) => {
     const authString = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+
 
     const response = await axios.post<GetTokensResponse>(
         "https://accounts.spotify.com/api/token",

@@ -8,6 +8,7 @@ const Upcoming = () => {
     const spotifyContext = useContext(SpotifyContext);
 
     const loadQueueData = useCallback(async () => {
+        if (!spotifyContext.isSignedIn) return;
         const result = await spotifyContext.getQueue();
         setQueue(result.queue);
     }, [spotifyContext]);

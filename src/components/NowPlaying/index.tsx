@@ -12,6 +12,7 @@ const NowPlaying = () => {
     const [durationMs, setDurationMs] = useState(0);
 
     const loadTrackStatusData = useCallback(async () => {
+        if (!spotifyContext.isSignedIn) return;
         const result = await spotifyContext.getCurrentTrackStatus();
         result.item && setArtworkUrl(result.item.album.images[0].url);
         result.item && setSongTitle(result.item.name);
