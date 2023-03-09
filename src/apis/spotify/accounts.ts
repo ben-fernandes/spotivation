@@ -4,14 +4,11 @@ import axios from "axios";
 
 type TokenType = "Bearer";
 
-interface RefreshAccessTokenResponse {
+interface GetTokensResponse {
     access_token: string;
     token_type: TokenType;
     scope: string;
     expires_in: number;
-}
-
-interface GetTokensResponse extends RefreshAccessTokenResponse {
     refresh_token: string;
 }
 
@@ -44,7 +41,7 @@ export const getTokens = async (
 };
 
 export const refreshAccessToken = async (refreshToken: string, clientId: string) => {
-    const response = await axios.post<RefreshAccessTokenResponse>(
+    const response = await axios.post<GetTokensResponse>(
         "https://accounts.spotify.com/api/token",
         {
             grant_type: "refresh_token",
