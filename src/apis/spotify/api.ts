@@ -1,4 +1,4 @@
-const SPOTIFY_API_BASE_URL = "https://api.spotify.com";
+import axiosService from "../../services/axiosService";
 
 export interface Artist {
     name: string;
@@ -29,26 +29,12 @@ export interface Queue {
     queue: Track[];
 }
 
-const getRequest = async (url: string, bearerToken: string) => {
-    const currentPlayingUrl = new URL(url, SPOTIFY_API_BASE_URL).toString();
-
-    const responseRaw = await fetch(currentPlayingUrl, {
-        headers: {
-            Authorization: `Bearer ${bearerToken}`,
-            "Content-Type": "application/json",
-        },
-    });
-    const responseJson = await responseRaw.json();
-
-    if (responseJson.error) throw responseJson.error;
-
-    return responseJson;
+export const getCurrentTrackStatusNew = async () => {
+    const response = await axiosService.get<CurrentlyPlaying>("/me/player/currently-playing");
+    return response.data;
 };
 
-export const getCurrentTrackStatusNew = async (bearerToken: string) => {
-    return await getRequest("v1/me/player/currently-playing", bearerToken);
-};
-
-export const getQueueNew = async (bearerToken: string): Promise<Queue> => {
-    return await getRequest("v1/me/player/queue", bearerToken);
+export const getQueueNew = async () => {
+    const response = await axiosService.get<Queue>("/me/player/queue");
+    return response.data;
 };

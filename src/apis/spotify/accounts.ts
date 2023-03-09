@@ -1,36 +1,58 @@
-import { REDIRECT_URL, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from "./constants";
+import { REDIRECT_URL } from "./constants";
 import { Buffer } from "buffer";
+import axios from "axios";
 
-// {status: 401, message: 'The access token expired'}
+interface RefreshAccessTokenResponse {
+    access_token: string;
+    token_type: string;
+    scope: string;
+    expires_in: number;
+}
 
-const SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
+interface GetTokensResponse extends RefreshAccessTokenResponse {
+    refresh_token: string;
+}
 
-export const getTokens = async (code: string, codeVerifier: string) => {
-    const formData = new URLSearchParams({
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: REDIRECT_URL,
-        client_id: SPOTIFY_CLIENT_ID,
-        code_verifier: codeVerifier,
-    }).toString();
+export const getTokens = async (
+    code: string,
+    codeVerifier: string,
+    clientId: string,
+    clientSecret: string
+) => {
+    const authString = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-    const tokenUrl = new URL("api/token", SPOTIFY_AUTH_BASE_URL).toString();
-    const authString = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString(
-        "base64"
-    );
-
-    const responseRaw = await fetch(tokenUrl, {
-        method: "POST",
-        headers: {
-            Authorization: `Basic ${authString}`,
-            "Content-Type": "application/x-www-form-urlencoded",
+    const response = await axios.post<GetTokensResponse>(
+        "https://accounts.spotify.com/api/token",
+        {
+            grant_type: "authorization_code",
+            code: code,
+            redirect_uri: REDIRECT_URL,
+            client_id: clientId,
+            code_verifier: codeVerifier,
         },
-        body: formData,
-    });
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: `Basic ${authString}`,
+            },
+        }
+    );
+    return response.data;
+};
 
-    const responseJson = await responseRaw.json();
-
-    if (responseJson.error) throw responseJson.error;
-
-    return responseJson;
+export const refreshAccessToken = async (refreshToken: string, clientId: string) => {
+    const response = await axios.post<RefreshAccessTokenResponse>(
+        "https://accounts.spotify.com/api/token",
+        {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+            client_id: clientId,
+        },
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        }
+    );
+    return response.data;
 };

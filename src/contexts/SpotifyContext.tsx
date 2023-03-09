@@ -1,6 +1,12 @@
 import { createContext, useEffect, useState } from "react";
 import pkceChallenge from "pkce-challenge";
-import { REDIRECT_URL, SPOTIFY_CLIENT_ID } from "../apis/spotify/constants";
+import {
+    REDIRECT_URL,
+    SPOTIFY_AUTH_STATE_KEY,
+    SPOTIFY_CLIENT_ID,
+    SPOTIFY_CLIENT_SECRET,
+    SPOTIFY_CODE_VERIFIER_KEY,
+} from "../apis/spotify/constants";
 import { getTokens } from "../apis/spotify/accounts";
 import {
     CurrentlyPlaying,
@@ -8,11 +14,8 @@ import {
     getQueueNew,
     Queue,
 } from "../apis/spotify/api";
+import { getLocalAccessToken, removeAuthTokens, setAuthTokens } from "../services/tokenService";
 
-const SPOTIFY_AUTH_STATE_KEY = "spotify_auth_state";
-const SPOTIFY_CODE_VERIFIER_KEY = "spotify_code_verifier";
-const SPOTIFY_ACCESS_TOKEN_KEY = "spotify_access_token";
-const SPOTIFY_REFRESH_TOKEN_KEY = "spotify_refresh_token";
 const SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
 
 const generateState = () => {
@@ -47,7 +50,7 @@ const SpotifyProvider: React.FC = (props) => {
 
     // on page load
     useEffect(() => {
-        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY);
+        const bearerToken = getLocalAccessToken();
         setIsSignedIn(bearerToken !== null);
     }, []);
 
@@ -83,10 +86,14 @@ const SpotifyProvider: React.FC = (props) => {
         window.localStorage.removeItem(SPOTIFY_AUTH_STATE_KEY);
 
         try {
-            const { access_token, refresh_token } = await getTokens(code, storedCodeVerifier);
+            const { access_token, refresh_token } = await getTokens(
+                code,
+                storedCodeVerifier,
+                SPOTIFY_CLIENT_ID,
+                SPOTIFY_CLIENT_SECRET
+            );
             window.localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
-            window.localStorage.setItem(SPOTIFY_ACCESS_TOKEN_KEY, access_token);
-            window.localStorage.setItem(SPOTIFY_REFRESH_TOKEN_KEY, refresh_token);
+            setAuthTokens(access_token, refresh_token);
             setIsSignedIn(true);
         } catch (error) {
             console.error(error);
@@ -97,26 +104,21 @@ const SpotifyProvider: React.FC = (props) => {
     const signOut = () => {
         window.localStorage.removeItem(SPOTIFY_AUTH_STATE_KEY);
         window.localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
-        window.localStorage.removeItem(SPOTIFY_ACCESS_TOKEN_KEY);
-        window.localStorage.removeItem(SPOTIFY_REFRESH_TOKEN_KEY);
+        removeAuthTokens();
         setIsSignedIn(false);
     };
 
     const getCurrentTrackStatus = async (): Promise<any> => {
-        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY) || "";
-
         try {
-            return await getCurrentTrackStatusNew(bearerToken);
+            return await getCurrentTrackStatusNew();
         } catch (error) {
             console.error(error);
         }
     };
 
     const getQueue = async (): Promise<any> => {
-        const bearerToken = window.localStorage.getItem(SPOTIFY_ACCESS_TOKEN_KEY) || "";
-
         try {
-            return await getQueueNew(bearerToken);
+            return await getQueueNew();
         } catch (error) {
             console.error(error);
         }
